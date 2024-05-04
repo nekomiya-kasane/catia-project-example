@@ -75,3 +75,4 @@ write_basic_package_version_file (
 add_subdirectory (Workspace_1)
 add_subdirectory (Workspace_2)
 
+add_subdirectory (docs)

@@ -1,5 +1,10 @@
-out/
-/bin/
-#Runtime/
-conanfile.txt
+# IDE
 .vs/
+.vscode/
+
+# temporary
+/out/
+/bin/
+/Runtime/
+/conanfile.txt
+/docs_gen
