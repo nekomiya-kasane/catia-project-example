@@ -3,6 +3,9 @@ coca_declare_framework (
     ROLE Development
 )
 
+add_subdirectory (Module_2_4_1_Dynamic)
+
+include (imported.cmake)
 include (instances.cmake)
 
 coca_bundle_framework (

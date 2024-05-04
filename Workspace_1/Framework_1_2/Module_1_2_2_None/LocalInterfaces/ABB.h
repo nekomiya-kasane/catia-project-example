@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Module-1-2-4-dynamic_export.h"
+#include "Module-1-2-4-none_export.h"
 
 void func_1_2_2_none();
 

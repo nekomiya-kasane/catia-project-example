@@ -440,6 +440,24 @@ function (coca_declare_module name accessibility)
         )
         target_sources ("${COCA_CURRENT_MODULE}" INTERFACE ${module_sources})
     endif ()
+
+    generate_export_header ("${COCA_CURRENT_MODULE}" 
+        BASE_NAME "${name}"
+        TEMPLATE_FILE "${COCA_ROOT}/templates/exports_blank.in.h"
+    )
+    target_include_directories ("${COCA_CURRENT_MODULE}" INTERFACE ${EXPORT_FILE_DIR})
+    target_compile_definitions ("${COCA_CURRENT_MODULE}" INTERFACE ${EXPORT_IMPORT_CONDITION})
+
+    define_property (TARGET PROPERTY COCA_MODULE_USE_COUNT)
+    define_property (TARGET PROPERTY COCA_MODULE_EXPORT_HEADER_DIR)
+    define_property (TARGET PROPERTY COCA_MODULE_EXPORT_HEADER_FILE)
+    define_property (TARGET PROPERTY COCA_MODULE_EXPORT_INTERNAL)
+    set_target_properties (${COCA_CURRENT_MODULE} PROPERTIES
+        COCA_MODULE_USE_COUNT 0
+        COCA_MODULE_EXPORT_HEADER_DIR ${EXPORT_FILE_DIR}
+        COCA_MODULE_EXPORT_HEADER_FILE ${EXPORT_FILE_NAME}
+        COCA_MODULE_EXPORT_INTERNAL ${EXPORT_IMPORT_CONDITION}
+    )
 endfunction ()
 
 macro (coca_bundle_module)
@@ -459,7 +477,6 @@ endmacro ()
 #       [INCLUDE_FRAMEWORKS [[name priviledge] ...]
 #       [INCLUDE_MODULES [item ...]]
 #       [LINK_MODULES [item ...]]
-#       [OUTPUT_NAME]
 #   )
 #
 # A binary target has the following extended properties:
@@ -507,7 +524,6 @@ function (coca_declare_binary name type)
         endif ()
     endforeach ()
 
-
     # 2. Create binary
     if (bin_IMPORTED)
         coca_push_scope (${name} ${type} ${accessibility} IMPORTED)
@@ -515,29 +531,30 @@ function (coca_declare_binary name type)
         coca_push_scope (${name} ${type} ${accessibility})
     endif ()
 
-    if (bin_OUTPUT_NAME)
-        set_target_properties ("${name}" PROPERTIES OUTPUT_NAME "${bin_OUTPUT_NAME}")
-    endif ()
-    # if ("${type}" STREQUAL "SHARED" AND NOT bin_IMPORTED)
-    #     get_target_property (IN_INTERFACE_FRAMEWORK "${COCA_CURRENT_FRAMEWORK}" COCA_INTERFACE_FRAMEWORK)
-    #     if (NOT IN_INTERFACE_FRAMEWORK)
-    #         generate_export_header ("${name}" 
-    #             TEMPLATE_FILE "${COCA_ROOT}/templates/exports.in.h"
-    #         )
-    #         target_include_directories ("${name}" PUBLIC ${EXPORT_FILE_DIR})
-    #     endif ()
-    # endif ()
-
     # 4. Bundle sources
-    get_target_property (available_modules ${COCA_CURRENT_SCOPE} COCA_AVAILABLE_SUBSCOPES_SCOPED)
     foreach (module ${bin_INCLUDE_MODULES})
         # @todo too bad here, how to include interface sources
+        get_target_property(module_use_count "${module}_Module_" COCA_MODULE_USE_COUNT)
+        math (EXPR module_use_count "${module_use_count} + 1")
+        set_target_properties ("${module}_Module_" PROPERTIES COCA_MODULE_USE_COUNT ${module_use_count})
+
         get_target_property(module_includes "${module}_Module_" INTERFACE_INCLUDE_DIRECTORIES)
         get_target_property(module_sources "${module}_Module_" INTERFACE_SOURCES)
-        target_include_directories (${name} PRIVATE ${module_includes})
-        target_include_directories (${name} PUBLIC "${module_public_includes}")
+        target_include_directories (${name} PRIVATE ${module_includes})        
         target_link_libraries (${name} PRIVATE "${module}_Module_")
         target_sources (${name} PRIVATE ${module_sources})
+        
+        # override export headers
+        if ("${type}" STREQUAL "SHARED")
+            get_target_property(module_export_file "${module}_Module_" COCA_MODULE_EXPORT_HEADER_FILE)
+            generate_export_header (
+                "${module}_Module_"
+                BASE_NAME "${module}"
+                TEMPLATE_FILE "${COCA_ROOT}/templates/exports.in.h"
+                EXPORT_FILE_NAME "${module_export_file}"
+            )
+            target_include_directories (${name} PUBLIC "${EXPORT_FILE_DIR}")
+        endif ()
     endforeach()
 
     # 5. Link other binaries

@@ -1,0 +1,20 @@
+
+
+#ifndef _ZCDCEXPORT_H_H
+#define _ZCDCEXPORT_H_H
+
+#include "ZwDCPlatform.h"
+
+#ifndef ZWDCCORE_EXPORTS
+#define ZCDC_EXPORT				ZWDC_IMPORT_DEF
+#define ZCDC_TOOLKIT_EXPORT		ZWDC_IMPORT_DEF
+#define ZCDC_STATIC_EXPORT		
+#else
+#define ZCDC_EXPORT				ZWDC_EXPORT_DEF
+#define ZCDC_TOOLKIT_EXPORT 
+#define ZCDC_STATIC_EXPORT		ZWDC_EXPORT_DEF
+#endif 
+
+
+
+#endif //_ZCDCEXPORT_H_H

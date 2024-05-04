@@ -1,13 +1,15 @@
-coca_declare_binary (
-  Zlib SHARED IMPORTED
-)
 
-set_target_properties (
-  Zlib PROPERTIES
-  IMPORTED_LOCATION 
-  IMPORTED_IMPLIB 
+
+coca_declare_binary (
+    Mimi-2-4-1 SHARED
+
+    INCLUDE_MODULES
+    Module-2-4-1-Dynamic
+
+    LINK_MODULES
+    ZwDC
 )
 
 coca_bundle_binary (
-  Zlib
+    Mimi-2-4-1 
 )

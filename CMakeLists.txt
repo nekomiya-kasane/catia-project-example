@@ -36,7 +36,11 @@ set (COCA_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
 endif ()
-
+get_filename_component (CMAKE_ABSOLUTE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE)
+if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL "${CMAKE_ABSOLUTE_INSTALL_PREFIX}")
+	message (FATAL_ERROR "You cannot install right inside the projecte directory. Sources will be overwritten.")
+endif ()
+	
 # Standard
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
