@@ -3,6 +3,12 @@ macro (set_parent name value)
     set (${ARGV0} ${ARGV1} PARENT_SCOPE)
 endmacro()
 
+macro (check_path_existance dir)
+    if (NOT EXISTS ${dir})
+        message (FATAL_ERROR "${dir} not exists.")
+    endif ()
+endmacro ()
+
 function (get_accessibility_option out_var public protected private)
     if (${public})
         set (${out_var} "PUBLIC")

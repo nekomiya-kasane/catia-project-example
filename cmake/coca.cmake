@@ -1,6 +1,20 @@
 ###############################
 # General Scope
 ###############################
+
+#
+# Push Scope [Macro] - Internal
+#   coca_push_scope (
+#     name            - Name of the scope
+#     type            - Type of the scope
+#                       [MODULE | SHARED | STATIC | EXECUTABLE | FRAMEWORK | WORKSPACE]
+#     accessibility   - Accessibility of the scope [PRIVATE | PROTECTED | PUBLIC]
+#     [IMPORTED]      - Only for libraries, IMPORTED GLOBAL
+#     [ROLE [Development | Test | Education]]
+#     [INCLUDE_SCOPES [scope accessibility] ... ]
+#                     - Referenced scopes
+#   )
+#
 macro (coca_push_scope name type accessibility)
 
     cmake_parse_arguments (
@@ -150,6 +164,10 @@ macro (coca_push_scope name type accessibility)
     endif ()
 endmacro ()
 
+#
+# Pop Scope [Macro] - Internal
+#   coca_push_scope ()
+#
 macro (coca_pop_scope)
     # 1. Reset current scope type
     set_parent (COCA_CURRENT_${COCA_CURRENT_SCOPE_TYPE} "")
@@ -158,11 +176,11 @@ macro (coca_pop_scope)
     # 2. Append itself to parent's submodule
     get_target_property_n (_parent_scope "${COCA_CURRENT_SCOPE}" COCA_PARENT_SCOPE)
     get_target_property_n (_parent_scope_scoped "${COCA_CURRENT_SCOPE}" COCA_PARENT_SCOPE_SCOPED)
-    if (_parent_scope)
+    if (_parent_scope AND NOT "${_parent_scope}" STREQUAL "${COCA_ROOT_NAMESPACE}")
         get_target_property_n (_parent_folder "${_parent_scope}" FOLDER)
     endif ()
 
-    if (NOT "${_parent_scope}" STREQUAL "")
+    if (NOT "${_parent_scope}" STREQUAL "${COCA_ROOT_NAMESPACE}")
         get_target_property (_accessibility "${COCA_CURRENT_SCOPE}" COCA_ACCESSIBILITY)
         get_target_property_n (_subscopes ${_parent_scope} COCA_SUBSCOPES_${_accessibility})
         get_target_property_n (_subscopes_scoped ${_parent_scope} COCA_SUBSCOPES_${_accessibility}_SCOPED)
@@ -190,6 +208,20 @@ endmacro ()
 ###############################
 # Workspace
 ###############################
+
+#
+# Declare workspace
+#   coca_declare_workspace (
+#     name
+#     [PUBLIC | PROTECTED | PRIVATE]  - Reserved, PUBLIC by default
+#     [OUTPUT_DIR dir]                - Output directory, defaulted to ${workspace}/Runtime
+#     [BUILD_TYPE]                    - Override build type 
+#     [PUBLIC_INTERFACES dir]
+#     [PROTECTED_INTERFACES dir]
+#     [PRIVATE_INTERFACES dir]
+#     [INCLUDE_SCOPES]
+#   )
+#
 function (coca_declare_workspace name)
     cmake_parse_arguments (
         ws 
@@ -211,6 +243,8 @@ function (coca_declare_workspace name)
     set_parent (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${_AFFIX} ${COCA_CURRENT_OUTPUT_DIR}/code/lib)
 
     coca_push_scope (${name} WORKSPACE PUBLIC)
+
+    set_parent (COCA_CURRENT_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${COCA_CMAKE_CURRENT_FOLDER}/Runtime/${CMAKE_SYSTEM_NAME}/${CMAKE_BUILD_TYPE})
 endfunction ()
 
 macro (coca_bundle_workspace name)
@@ -320,7 +354,6 @@ function (coca_declare_framework name accessibility)
         set_target_properties (${name} PROPERTIES COCA_INTERFACE_FRAMEWORK 0)
     endif ()
 
-
     include_directories (
       ${COCA_CURRENT_FRAMEWORK_PUBLIC_INTERFACES}
       ${COCA_CURRENT_FRAMEWORK_PROTECTED_INTERFACES}
@@ -348,7 +381,30 @@ macro (coca_bundle_framework name)
         ${ARGN}
     )
 
+    if (EXISTS PublicInterfaces)
+        install (DIRECTORY PublicInterfaces DESTINATION "${COCA_CURRENT_INSTALL_DIR}/include")
+    endif ()
+    if (EXISTS ProtectedInterfaces)
+        install (DIRECTORY ProtectedInterfaces DESTINATION "${COCA_CURRENT_INSTALL_DIR}/include")
+    endif ()
+    # install (DIRECTORY ./PrivateInterfaces DESTINATION ${CMAKE_INSTALL_PREFIX}/${COCA_CURRENT_INSTALL_DIR}/include/PrivateInterfaces)
+
     coca_pop_scope (${name})
+
+    #get_target_property_n (parent_scope "${COCA_CURRENT_SCOPE}" COCA_PARENT_SCOPE)
+    #if (parent_scope)
+    #    set (parent_scope ${parent_scope}::)
+    #endif ()
+    #install (
+    #    TARGETS 
+    #    EXPORT ${COCA_CURRENT_WORKSPACE}
+    #    FILE ${COCA_CURRENT_WORKSPACE}.cmake
+    #    NAMESPACE ${parent_scope}
+    #    LIBRARY DESTINATION 
+    #    ARCHIVE DESTINATION 
+    #    RUNTIME DESTINATION
+    #    PUBLIC_HEADER DESTINATION
+    #)
 
     # 1. instantiate sources
     foreach (instances ${fw_INSTANCES})
@@ -561,6 +617,24 @@ function (coca_declare_binary name type)
     foreach (module ${bin_LINK_MODULES})
         target_link_libraries (${name} PRIVATE ${module})
     endforeach ()
+
+    # 6. Install
+    
+    if (bin_IMPORTED)
+        set (install_type "IMPORTED_RUNTIME_ARTIFACTS")
+        install(IMPORTED_RUNTIME_ARTIFACTS ${name}
+            LIBRARY DESTINATION ${COCA_CURRENT_INSTALL_DIR}/code/lib 
+            RUNTIME DESTINATION ${COCA_CURRENT_INSTALL_DIR}/code/bin 
+        )
+    else ()
+        install(TARGETS ${name}
+            EXPORT ${COCA_CURRENT_WORKSPACE} 
+            LIBRARY DESTINATION ${COCA_CURRENT_INSTALL_DIR}/code/lib 
+            ARCHIVE DESTINATION ${COCA_CURRENT_INSTALL_DIR}/code/lib  
+            RUNTIME DESTINATION ${COCA_CURRENT_INSTALL_DIR}/code/bin 
+            PUBLIC_HEADER DESTINATION ${COCA_CURRENT_INSTALL_DIR}/include 
+        )
+    endif ()
 endfunction ()
 
 macro (coca_bundle_binary)

@@ -1,8 +1,10 @@
 cmake_minimum_required (VERSION 3.26)
 
-# Dependency provider
+set (COCA_ROOT_NAMESPACE "COCA" CACHE STRING "Root namespace for this project")
+
 include (cmake/preconfigure.cmake)
 
+# Dependency provider
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/templates/conanfile.in.txt" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/conanfile.txt"
@@ -14,11 +16,12 @@ set (CMAKE_PROJECT_TOP_LEVEL_INCLUDES
 )
 
 # Project
-project (COCAComponent C CXX)
+project (COCAComponent VERSION 0.0.1 LANGUAGES C CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # CMake auxiliary tools
+include (CMakePackageConfigHelpers)
 include (CMakeParseArguments)
 include (CTest)
 
@@ -60,6 +63,13 @@ if (BUILD_TESTING)
 	# https://google.github.io/googletest/quickstart-cmake.html
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 endif ()
+
+# Version file
+write_basic_package_version_file (
+	${CMAKE_PROJECT_NAME}Version.cmake
+	VERSION ${PACKAGE_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
 
 # Scopes
 add_subdirectory (Workspace_1)
