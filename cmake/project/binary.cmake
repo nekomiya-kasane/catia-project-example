@@ -21,7 +21,6 @@ set (COCA_BINARY_PROPERTIES
 #       type                         - STATIC, SHARED, or EXECUTABLE
 #       [PUBLIC | PROTECTED | PRIVATE]
 #       [IMPORTED]
-#       [OUTPUT_NAME ...]
 #       [INCLUDE_MODULES [item ...]]
 #       [LINK_MODULES [item ...]]
 #   )
@@ -33,7 +32,7 @@ macro (coca_declare_binary name type accessibility)
     cmake_parse_arguments (
         bin 
         "IMPORTED;PRIVATE;PROTECTED;PUBLIC" 
-        "OUTPUT_NAME"
+        ""
         "INCLUDE_MODULES;LINK_MODULES"
         ${ARGN}
     )
@@ -42,9 +41,53 @@ macro (coca_declare_binary name type accessibility)
     if (bin_IMPORTED)
         add_library (${name} ${type} IMPORTED GLOBAL)
         add_library (${COCA_CURRENT_SCOPE_SCOPED}::${name} ALIAS ${name})
-    elseif (NOT ${type} STREQUAL "EXECUTABLE")
+    elseif (${type} STREQUAL "STATIC" OR ${type} STREQUAL "OBJECT")
         add_library (${name} ${type})
         add_library (${COCA_CURRENT_SCOPE_SCOPED}::${name} ALIAS ${name})
+    elseif (${type} STREQUAL "SHARED")
+        # @todo 
+        # add_library (Init.${name} ${type})
+        # add_library (${COCA_CURRENT_SCOPE_SCOPED}::Init.${name} ALIAS Init.${name})
+        add_library (${name} ${type})
+        add_library (${COCA_CURRENT_SCOPE_SCOPED}::${name} ALIAS ${name})
+        define_property (TARGET PROPERTY COCA_SHARED_OBJECT_TARGET)
+        # set_target_properties (
+        #     ${name} PROPERTIES
+        #     COCA_SHARED_INIT_TARGET Init.${name}
+        #     LINK_FLAGS "/FORCE:UNRESOLVED"
+        # )
+        # set_target_properties (
+        #     Init.${name} PROPERTIES
+        #     COCA_SHARED_INIT_TARGET ${name}
+        #     SOURCES $<TARGET_PROPERTY:${name},SOURCES>
+        #     INCLUDE_DIRECTORIES $<TARGET_PROPERTY:${name},INCLUDE_DIRECTORIES>
+        #     INTERFACE_INCLUDE_DIRECTORIES $<TARGET_PROPERTY:${name},INTERFACE_INCLUDE_DIRECTORIES>
+        #     #OUTPUT_NAME $<TARGET_PROPERTY:${name},OUTPUT_NAME>
+        # )
+        # add_library (Object.${name} OBJECT)
+        # add_library (${COCA_CURRENT_SCOPE_SCOPED}::Object.${name} ALIAS ${name})
+        # add_library (Define.${name} OBJECT)
+        # add_library (${COCA_CURRENT_SCOPE_SCOPED}::Define.${name} ALIAS ${name})
+        # add_library (${name} ${type})
+        # add_library (${COCA_CURRENT_SCOPE_SCOPED}::${name} ALIAS ${name})
+        # define_property (TARGET PROPERTY COCA_SHARED_OBJECT_TARGET)
+        # define_property (TARGET PROPERTY COCA_SHARED_DEFINE_TARGET)
+        # define_property (TARGET PROPERTY COCA_SHARED_MAIN_TARGET)
+        # set_target_properties (
+        #     ${name} PROPERTIES
+        #     COCA_SHARED_OBJECT_TARGET ${name}
+        #     COCA_SHARED_DEFINE_TARGET Define.${name}
+        #     COCA_SHARED_OBJECT_TARGET Object.${name}
+        # )
+        # set_target_properties (
+        #     Object.${name} PROPERTIES
+        #     OUTPUT_NAME $<TARGET_PROPERTY:${name},OUTPUT_NAME>
+        # )
+        # set_target_properties (
+        #     Define.${name} PROPERTIES
+        #     OUTPUT_NAME $<TARGET_PROPERTY:${name},OUTPUT_NAME>
+        #     STATIC_LIBRARY_OPTIONS "/DEF"
+        # )
     else ()
         add_executable (${name})
         add_executable (${COCA_CURRENT_SCOPE_SCOPED}::${name} ALIAS ${name})
