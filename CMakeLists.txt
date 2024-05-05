@@ -39,10 +39,12 @@ include (cmake/project/dependency.cmake)
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE "Debug")
 endif ()
+
 set (COCA_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
 endif ()
+
 get_filename_component (CMAKE_ABSOLUTE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE)
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL "${CMAKE_ABSOLUTE_INSTALL_PREFIX}")
 	message (FATAL_ERROR "You cannot install right inside the projecte directory. Sources will be overwritten.")
@@ -53,10 +55,33 @@ set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_C_STANDARD C17)
 
-# Options and platforms
-option (COCA_OUTPUT_FRAMEWORK_INFO "Output all framework's information" ON)
+# Platforms
 if (UNIX)
 	set_property (GLOBAL PROPERTY POSITION_INDEPENDENT_CODE 1)
+endif ()
+
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE STRING "") # For ninja and intellisense
+
+# Static checking
+option (ENABLE_CLANG_TIDY "Enable clang-tidy static checks" OFF)
+find_program (CLANG_TIDY_EXECUTABLE "clang-tidy" HINTS "${COCA_CLANG_TIDY_PATH}")
+if (ENABLE_CLANG_TIDY AND CLANG_TIDY_EXECUTABLE)
+	set (CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=*" CACHE STRING "")
+	set (CMAKE_C_CLANG_TIDY "clang-tidy;-checks=*" CACHE STRING "")
+endif ()
+
+option (ENABLE_CPPCHECK "Enable cppcheck" OFF)
+find_program (CPPCHECK_EXECUTABLE "cppcheck" HINTS "${COCA_CPPCHECK_PATH}")
+if (ENABLE_CPPCHECK AND CPPCHECK_EXECUTABLE)
+	set (CMAKE_CXX_CPPCHECK "${CPPCHECK_EXECUTABLE}" CACHE STRING "")
+	set (CMAKE_C_CPPCHECK "${CPPCHECK_EXECUTABLE}" CACHE STRING "")
+endif ()
+
+option (ENABLE_IWYU "Enable include-what-you-use" OFF)
+find_program (IWYU_EXECUTABLE "include-what-you-use" HINTS "${COCA_IWYU_PATH}")
+if (ENABLE_IWYU AND IWYU_EXECUTABLE)
+	set (CMAKE_CXX_IWYU "${IWYU_EXECUTABLE}" CACHE STRING "")
+	set (CMAKE_C_IWYU "${IWYU_EXECUTABLE}" CACHE STRING "")
 endif ()
 
 # Testing
