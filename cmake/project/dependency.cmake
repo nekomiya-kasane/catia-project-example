@@ -55,6 +55,7 @@ function (coca_link_dependencies binary)
     get_target_property_n (include_modules ${binary} COCA_BINARY_INCLUDE_MODULES)
     get_target_property_n (link_modules ${binary} COCA_BINARY_LINK_MODULES)
     get_target_property_n (binary_type ${binary} COCA_BINARY_TYPE)
+    get_target_property_n (original_binary ${binary} ALIASED_TARGET)
 
     list (APPEND modules_to_check ${link_modules})
     foreach (module ${include_modules})
@@ -94,10 +95,9 @@ function (coca_link_dependencies binary)
         set_target_properties ("${prefixed_module}" PROPERTIES COCA_MODULE_USE_COUNT ${module_use_count})
 
         # @todo too bad here, how to include interface sources elegantly?
-        get_target_property(module_export_dir "${prefixed_module}" COCA_MODULE_EXPORT_HEADER_DIR)
-        get_target_property(module_includes "${prefixed_module}" INTERFACE_INCLUDE_DIRECTORIES)
-        get_target_property(module_sources "${prefixed_module}" INTERFACE_SOURCES)
-        get_target_property (original_binary ${binary} ALIASED_TARGET)
+        get_target_property (module_export_dir "${prefixed_module}" COCA_MODULE_EXPORT_HEADER_DIR)
+        get_target_property (module_includes "${prefixed_module}" INTERFACE_INCLUDE_DIRECTORIES)
+        get_target_property (module_sources "${prefixed_module}" INTERFACE_SOURCES)
         target_include_directories (${original_binary} 
             PUBLIC ${available_includes} ${module_export_dir}
             PRIVATE ${module_includes}
@@ -120,6 +120,9 @@ function (coca_link_dependencies binary)
 
     # 5. Link other binaries
     foreach (module ${link_modules})
-        target_link_libraries (${original_binary} PRIVATE ${module})
+        if (NOT TARGET "${module}")
+            message (FATAL_ERROR "Module ${module} to be linked to ${binary}, but not found.")
+        endif ()
+        target_link_libraries ("${original_binary}" PRIVATE "${module}")
     endforeach ()
 endfunction ()

@@ -184,9 +184,9 @@ endmacro ()
 # Bundle a Framework
 # 
 #   coca_bundle_framework (
-#       name                            - framework name
-#       [MODULES [name accessibility]]  - explicite module names, will be filled 
-#                                         with all subfolder names defaultly
+#       name                                - framework name
+#       [MODULES [name accessibility] ...]  - explicite module names, will be filled 
+#                                             with all subfolder names defaultly
 #   )
 #
 macro (coca_bundle_framework name)

@@ -6,6 +6,7 @@ add_subdirectory (Framework_2_1)
 add_subdirectory (Framework_2_2)
 add_subdirectory (Framework_2_3_Test)
 add_subdirectory (Framework_2_4_Imported)
+add_subdirectory (Framework_2_5_Mutual)
 
 coca_bundle_workspace (
   Workspace-2

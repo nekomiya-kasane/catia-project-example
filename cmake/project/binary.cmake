@@ -38,6 +38,7 @@ macro (coca_declare_binary name type accessibility)
         ${ARGN}
     )
 
+    set (cache_name ${name}-${type})
     if (bin_IMPORTED)
         add_library (${name} ${type} IMPORTED GLOBAL)
         add_library (${COCA_CURRENT_SCOPE_SCOPED}::${name} ALIAS ${name})
