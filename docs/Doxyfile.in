@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @CMAKE_SOURCE_DIR@/docs_gen
+OUTPUT_DIRECTORY       = "@CMAKE_SOURCE_DIR@/docs_gen"
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -2474,8 +2474,8 @@ DOT_CLEANUP            = YES
 
 FULL_SIDEBAR           = NO
 
-HTML_EXTRA_STYLESHEET  = @CMAKE_SOURCE_DIR@/docs/theme/doxygen-awesome.css \
-                        @CMAKE_SOURCE_DIR@/docs/theme/doxygen-awesome-sidebar-only.css
+HTML_EXTRA_STYLESHEET  = "@CMAKE_SOURCE_DIR@/docs/theme/doxygen-awesome.css" \
+                        "@CMAKE_SOURCE_DIR@/docs/theme/doxygen-awesome-sidebar-only.css"
 
 HTML_COLORSTYLE        = LIGHT # required with Doxygen >= 1.9.5
 

@@ -4,7 +4,7 @@ set (COCA_ROOT_NAMESPACE "COCA" CACHE STRING "Root namespace for this project")
 
 include (cmake/preconfigure.cmake)
 
-Dependency provider
+# Dependency provider
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/configs/conanfile.in.txt" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/conanfile.txt"
