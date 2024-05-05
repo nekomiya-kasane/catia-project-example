@@ -4,9 +4,9 @@ set (COCA_ROOT_NAMESPACE "COCA" CACHE STRING "Root namespace for this project")
 
 include (cmake/preconfigure.cmake)
 
-# Dependency provider
+Dependency provider
 configure_file (
-	"${CMAKE_CURRENT_SOURCE_DIR}/templates/conanfile.in.txt" 
+	"${CMAKE_CURRENT_SOURCE_DIR}/configs/conanfile.in.txt" 
 	"${CMAKE_CURRENT_SOURCE_DIR}/conanfile.txt"
 )
 
@@ -29,7 +29,11 @@ include (cmake/auxiliary.cmake)
 include (cmake/global.cmake)
 include (cmake/exports.cmake)
 include (cmake/utility.cmake)
-include (cmake/coca.cmake)
+
+include (cmake/project/scope.cmake)
+include (cmake/project/coca.cmake)
+include (cmake/project/binary.cmake)
+include (cmake/project/dependency.cmake)
 
 # Output paths
 if (NOT CMAKE_BUILD_TYPE)
@@ -76,3 +80,5 @@ add_subdirectory (Workspace_1)
 add_subdirectory (Workspace_2)
 
 add_subdirectory (docs)
+
+include (cmake/project/final.cmake)

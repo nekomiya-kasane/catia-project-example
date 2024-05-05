@@ -2,6 +2,10 @@
 coca_declare_framework (
     Framework_2_1 PUBLIC
     ROLE Development
+
+    INCLUDE_FRAMEWORKS
+    Framework_1_1 PROTECTED
+    Framework_1_2 PROTECTED
 )
 
 # Add things here
@@ -22,6 +26,6 @@ coca_bundle_framework (
     Module-2-1-2-None
     Module-2-1-3-Dynamic
     Module-2-1-4-None
-		Module-2-1-5-Static_Protected
-		Module-2-1-6-Dynamic_Protected
+	Module-2-1-5-Static_Protected
+	Module-2-1-6-Dynamic_Protected
 )

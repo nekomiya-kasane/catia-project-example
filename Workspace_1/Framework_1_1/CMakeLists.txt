@@ -22,6 +22,6 @@ coca_bundle_framework (
     Module-1-1-2-None
     Module-1-1-3-Dynamic
     Module-1-1-4-None
-		Module-1-1-5-Static_Protected
-		Module-1-1-6-Dynamic_Protected
+	Module-1-1-5-Static_Protected
+	Module-1-1-6-Dynamic_Protected
 )

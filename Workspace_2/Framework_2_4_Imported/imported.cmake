@@ -1,5 +1,5 @@
 coca_declare_binary (
-  ZwDC SHARED IMPORTED
+  ZwDC SHARED PUBLIC IMPORTED
 )
 
 set_target_properties (

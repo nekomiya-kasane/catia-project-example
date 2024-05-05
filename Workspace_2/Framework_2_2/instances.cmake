@@ -1,7 +1,7 @@
 # Define additional binaries here
 coca_declare_binary (
 	Module-2-2-1-Static
-	STATIC
+	STATIC PUBLIC
 
 	INCLUDE_MODULES
 	Module-2-2-1-Static
@@ -14,7 +14,7 @@ coca_bundle_binary (Module-2-2-1-Static)
 
 coca_declare_binary (
 	Module-2-2-3-Dynamic
-	SHARED
+	SHARED PUBLIC
 
 	INCLUDE_MODULES
 	Module-2-2-3-Dynamic
@@ -27,7 +27,8 @@ coca_declare_binary (
 coca_bundle_binary (Module-2-2-3-Dynamic)
 
 coca_declare_binary (
-	Module-2-2-4-Dynamic SHARED
+	Module-2-2-4-Dynamic 
+	SHARED PUBLIC
 
 	INCLUDE_MODULES
 	Module-2-2-2-None
@@ -37,7 +38,7 @@ coca_bundle_binary (Module-2-2-4-Dynamic)
 
 coca_declare_binary (
 	Module-2-2-5-Static-Protected
-	STATIC
+	STATIC PROTECTED
 
 	INCLUDE_MODULES
 	Module-2-2-5-Static-Protected
@@ -46,7 +47,7 @@ coca_bundle_binary (Module-2-2-5-Static-Protected)
 
 coca_declare_binary (
 	Module-2-2-6-Dynamic-Protected
-	SHARED
+	SHARED PROTECTED
 
 	INCLUDE_MODULES
 	Module-2-2-6-Dynamic-Protected

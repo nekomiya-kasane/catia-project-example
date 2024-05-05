@@ -1,6 +1,6 @@
 coca_declare_binary (
 	Module-2-3-1-Test
-	EXECUTABLE
+	EXECUTABLE PUBLIC
 
 	INCLUDE_MODULES
 	Module-2-3-1-Test
@@ -9,7 +9,7 @@ coca_declare_binary (
 	Module-2-2-6-Dynamic-Protected
 )
 
-target_link_libraries (${COCA_CURRENT_EXECUTABLE} PRIVATE GTest::GTest GTest::Main)
-gtest_discover_tests (${COCA_CURRENT_EXECUTABLE})
+target_link_libraries (${COCA_CURRENT_BINARY} PRIVATE GTest::GTest GTest::Main)
+gtest_discover_tests (${COCA_CURRENT_BINARY})
 
 coca_bundle_binary (Module-2-3-1-Test)

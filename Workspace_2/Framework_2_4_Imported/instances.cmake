@@ -1,7 +1,8 @@
 
 
 coca_declare_binary (
-    Mimi-2-4-1 SHARED
+    Mimi-2-4-1 
+    SHARED PUBLIC
 
     INCLUDE_MODULES
     Module-2-4-1-Dynamic
