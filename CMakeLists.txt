@@ -29,6 +29,7 @@ include (cmake/auxiliary.cmake)
 include (cmake/global.cmake)
 include (cmake/exports.cmake)
 include (cmake/utility.cmake)
+include (cmake/format.cmake)
 
 include (cmake/project/scope.cmake)
 include (cmake/project/coca.cmake)
@@ -40,7 +41,7 @@ if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-set (COCA_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set (COCA_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
 endif ()
@@ -60,7 +61,20 @@ if (UNIX)
 	set_property (GLOBAL PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif ()
 
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#		add_compile_definitions (-MJ "compile_command.json")
+# endif ()
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE STRING "") # For ninja and intellisense
+find_program (NINJA_EXECUTABLE "ninja" HINTS "${CMAKE_CURRENT_SOURCE_DIR}/toolchain")
+if (NINJA_EXECUTABLE AND CMAKE_GENERATOR STREQUAL "Ninja")
+	add_custom_target (
+		GenerateCompdb
+		COMMAND ${NINJA_EXECUTABLE} -t compdb > compile_commands.json
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		BYPRODUCTS ${CMAKE_BINARY_DIR}/compile_commands.json
+	)
+	set_target_properties (GenerateCompdb PROPERTIES FOLDER Utility)
+endif ()
 
 # Static checking
 option (ENABLE_CLANG_TIDY "Enable clang-tidy static checks" OFF)
