@@ -3,9 +3,19 @@
   "configurePresets": [
     {
       "name": "Debug",
+      "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "D:/applications/LLVM/latest/Debug/bin/clang++.exe",
+        "CMAKE_C_COMPILER": "D:/applications/LLVM/latest/Debug/bin/clang.exe",
+        "CMAKE_MAKE_PROGRAM": "D:/scoop_global/shims/ninja.exe",
         "CMAKE_MESSAGE_LOG_LEVEL": "VERBOSE"
+      }
+    },
+    {
+      "name": "Debug - MSVC",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     }
   ]

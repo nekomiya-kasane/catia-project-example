@@ -178,6 +178,21 @@ macro (coca_declare_framework name accessibility)
       ${COCA_CURRENT_FRAMEWORK_PROTECTED_INTERFACES}
       ${COCA_CURRENT_FRAMEWORK_PRIVATE_INTERFACES}
     )
+
+    if (NOT bin_OUTPUT_NAME)
+        set (bin_OUTPUT_NAME ${name})
+    endif ()
+    set (COCA_CURRENT_FRAMEWORK_HEADER_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${bin_OUTPUT_NAME})
+    if (EXISTS ${COCA_CURRENT_FRAMEWORK_PUBLIC_INTERFACES})
+        install (
+            DIRECTORY ${COCA_CURRENT_FRAMEWORK_PUBLIC_INTERFACES}/
+            DESTINATION ${COCA_CURRENT_FRAMEWORK_HEADER_INSTALL_DIR}
+            FILES_MATCHING PATTERN "*.h"
+            PERMISSIONS OWNER_READ GROUP_READ
+        )
+    elseif (NOT "${fw_ROLE}" STREQUAL "Test")
+        message (WARNING "Framework ${name} has not PublicInterfaces.")
+    endif ()
 endmacro ()
 
 #
@@ -197,14 +212,6 @@ macro (coca_bundle_framework name)
         "MODULES"
         ${ARGN}
     )
-
-    if (EXISTS PublicInterfaces)
-        install (DIRECTORY PublicInterfaces DESTINATION "${COCA_CURRENT_INSTALL_DIR}/include")
-    endif ()
-    if (EXISTS ProtectedInterfaces)
-        install (DIRECTORY ProtectedInterfaces DESTINATION "${COCA_CURRENT_INSTALL_DIR}/include")
-    endif ()
-    # install (DIRECTORY ./PrivateInterfaces DESTINATION ${CMAKE_INSTALL_PREFIX}/${COCA_CURRENT_INSTALL_DIR}/include/PrivateInterfaces)
 
     coca_pop_scope (${name})
 endmacro ()

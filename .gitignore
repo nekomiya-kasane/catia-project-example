@@ -1,10 +1,13 @@
 # IDE
 .vs/
 .vscode/
+.cache/
 
 # temporary
 /out/
 /bin/
+/build/
 /Runtime/
 /conanfile.txt
 /docs_gen
+/compile_commands.json
